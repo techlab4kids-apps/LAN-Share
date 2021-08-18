@@ -38,7 +38,7 @@ public:
     Device device(const QString& id) const;
     Device device(const QHostAddress& address) const;
 
-    QVector<Device> getDevices() const;
+    QVector<Device> getDevices();
     void setDevices(const QVector<Device> &getDevices);
 
 private Q_SLOTS:

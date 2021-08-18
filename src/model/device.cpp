@@ -57,3 +57,9 @@ bool Device::operator!=(const Device& other) const
 {
     return !((*this) == other);
 }
+
+
+bool Device::operator<(const Device& other)
+{
+    return (*this).getName() < other.getName();
+}

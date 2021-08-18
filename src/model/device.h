@@ -45,6 +45,7 @@ public:
 
     bool operator==(const Device& other) const;
     bool operator!=(const Device& other) const;
+    bool operator<(const Device& other);
 
 private:
     QString mId{""};

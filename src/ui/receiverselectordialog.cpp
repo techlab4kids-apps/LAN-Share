@@ -17,6 +17,7 @@
 */
 
 #include <QMessageBox>
+#include <QDataWidgetMapper>
 
 #include "receiverselectordialog.h"
 #include "ui_receiverselectordialog.h"
@@ -33,8 +34,24 @@ ReceiverSelectorDialog::ReceiverSelectorDialog(DeviceListModel* model, QWidget *
 
     ui->listView->setModel(mModel);
     ui->listView->setCurrentIndex(QModelIndex());
+    connect(ui->listView->model(), SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(onReceiverAdded()));
 
     model->refresh();
+
+    connect(ui->listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)), this, SLOT(onItemSelected(QItemSelection, QItemSelection)));
+
+}
+
+void ReceiverSelectorDialog::onItemSelected (QItemSelection selected, QItemSelection deselected )
+{
+    QString lblReceiverSelected = QString("%1").arg(selected.length());
+     ui->lblReceiversSelected->setText(lblReceiverSelected);
+}
+
+void ReceiverSelectorDialog::onReceiverAdded()
+{
+    QString lblReceiverAdded = QString("%1").arg(QString::number(mModel->rowCount()));
+    ui->lblReceiverCount->setText(lblReceiverAdded);
 }
 
 ReceiverSelectorDialog::~ReceiverSelectorDialog()
@@ -62,6 +79,10 @@ QVector<Device> ReceiverSelectorDialog::getSelectedDevices() const
         for (auto selectedIndex : selected) {
             if (selectedIndex.isValid()) {
                 devices.push_back(mModel->device(selectedIndex.row()));
+
+                QString lblReceiverSelected = QString("%1").arg(QString::number(devices.length()));
+                ui->lblReceiversSelected->setText(lblReceiverSelected);
+
             }
         }
     }

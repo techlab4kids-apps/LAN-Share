@@ -20,6 +20,7 @@
 #define RECEIVERSELECTORDIALOG_H
 
 #include <QDialog>
+#include <QItemSelection>
 
 class DeviceListModel;
 class Device;
@@ -42,6 +43,8 @@ public:
 private Q_SLOTS:
     void onSendClicked();
     void onRefreshClicked();
+    void onItemSelected(QItemSelection selected, QItemSelection deselected);
+    void onReceiverAdded();
 
 private:
     Ui::ReceiverSelectorDialog *ui;

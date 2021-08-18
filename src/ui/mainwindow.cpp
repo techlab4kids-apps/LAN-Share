@@ -37,6 +37,7 @@
 #include "util.h"
 #include "transfer/sender.h"
 #include "transfer/receiver.h"
+#include "model/transferinfo.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -56,9 +57,6 @@ MainWindow::MainWindow(QWidget *parent) :
     mTransServer = new TransferServer(mDeviceModel, this);
     mTransServer->listen();
 
-//    mSenderModel->setHeaderData((int) TransferTableModel::Column::Peer, Qt::Horizontal, tr("Receiver"));
-//    mReceiverModel->setHeaderData((int) TransferTableModel::Column::Peer, Qt::Horizontal, tr("Sender"));
-
     ui->senderTableView->setModel(mSenderModel);
     ui->receiverTableView->setModel(mReceiverModel);
 
@@ -67,6 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->receiverTableView->setColumnWidth((int)TransferTableModel::Column::FileName, 340);
     ui->receiverTableView->setColumnWidth((int)TransferTableModel::Column::Progress, 160);
+
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerEvent()));
 
     connectSignals();
 }
@@ -164,14 +165,23 @@ void MainWindow::sendFile(const QString& folderName, const QString &filePath, co
     mSenderModel->insertTransfer(sender);
     QModelIndex progressIdx = mSenderModel->index(0, (int)TransferTableModel::Column::Progress);
 
-    /*
-     * tambah progress bar pada item transfer
-     */
     QProgressBar* progress = new QProgressBar();
     connect(sender->getTransferInfo(), &TransferInfo::progressChanged, progress, &QProgressBar::setValue);
 
     ui->senderTableView->setIndexWidget(progressIdx, progress);
     ui->senderTableView->scrollToTop();
+
+    while(sender->getTransferInfo()->getState() != TransferState::Finish){
+        QCoreApplication::processEvents();
+    }
+}
+
+void MainWindow::timerEvent()
+{
+    qDebug() << "Timer...";
+    elapsedSeconds++;\
+    QString timeElapsed = QDateTime::fromTime_t(elapsedSeconds).toString("mm:ss");
+    ui->lblElapsedTime->setText(timeElapsed);
 }
 
 void MainWindow::selectReceiversAndSendTheFiles(QVector<QPair<QString, QString> > dirNameAndFullPath)
@@ -179,20 +189,48 @@ void MainWindow::selectReceiversAndSendTheFiles(QVector<QPair<QString, QString> 
     ReceiverSelectorDialog dialog(mDeviceModel);
     if (dialog.exec() == QDialog::Accepted) {
         QVector<Device> receivers = dialog.getSelectedDevices();
+
+        int receiversCount = receivers.length();
+
+        QString lblClientProcessedValue = QString("%1 di %2").arg(QString::number(0), QString::number(receiversCount));
+        ui->lblClientProcessedProgress->setText(lblClientProcessedValue);
+
+        int filesCount = dirNameAndFullPath.length();
+
+        QString lblFileProcessedValue = QString("%1 di %2").arg(QString::number(0), QString::number(filesCount));
+        ui->lblFileProcessedProgress->setText(lblFileProcessedValue);
+
+        int processedDevices = 0;
+        int processedFiles = 0;
+
+        timer->start(1000);
+
+        elapsedSeconds = 0;
+
         for (const Device& receiver : receivers) {
+
             if (receiver.isValid()) {
 
-                /*
-                 * Memastikan bahwa device/kompuer ini terdaftar di penerima
-                 * Just to make sure.
-                 */
                 mBroadcaster->sendBroadcast();
                 for (const auto& p : dirNameAndFullPath) {
                     sendFile(p.first, p.second, receiver);
-                }
+                    processedFiles +=1;
 
+                    lblFileProcessedValue = QString("%1 di %2").arg(QString::number(processedFiles), QString::number(filesCount));
+                    ui->lblFileProcessedProgress->setText(lblFileProcessedValue);
+                }
             }
+
+            processedFiles = 0;
+            processedDevices +=1;
+            lblClientProcessedValue = QString("%1 di %2").arg(QString::number(processedDevices), QString::number(receiversCount));
+            ui->lblClientProcessedProgress->setText(lblClientProcessedValue);
+
+            int secondsEstimated = receiversCount * elapsedSeconds/(processedDevices);
+            ui->lblEstimetedTotalTime->setText((QDateTime::fromTime_t(secondsEstimated).toString("mm:ss")));
+
         }
+        timer->stop();
     }
 }
 
@@ -559,6 +597,8 @@ void MainWindow::onSelectedSenderStateChanged(TransferState state)
     ui->pauseSenderBtn->setEnabled(state == TransferState::Transfering || state == TransferState::Waiting);
     ui->cancelSenderBtn->setEnabled(state == TransferState::Transfering || state == TransferState::Waiting ||
                                     state == TransferState::Paused);
+
+    ui->senderTableView->sortByColumn(3, Qt::SortOrder::AscendingOrder);
 }
 
 void MainWindow::onSelectedReceiverStateChanged(TransferState state)
@@ -567,6 +607,8 @@ void MainWindow::onSelectedReceiverStateChanged(TransferState state)
     ui->pauseReceiverBtn->setEnabled(state == TransferState::Transfering || state == TransferState::Waiting);
     ui->cancelReceiverBtn->setEnabled(state == TransferState::Transfering || state == TransferState::Waiting ||
                                     state == TransferState::Paused);
+
+    ui->receiverTableView->sortByColumn(3, Qt::SortOrder::AscendingOrder);
 }
 
 void MainWindow::quitApp()

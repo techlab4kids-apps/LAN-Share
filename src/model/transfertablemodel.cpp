@@ -170,7 +170,7 @@ QString TransferTableModel::getStateString(TransferState state) const
     case TransferState::Paused : return tr("Paused");
     case TransferState::Cancelled : return tr("Cancelled");
     case TransferState::Transfering : return tr("Transfering");
-    case TransferState::Finish : return tr("Finish");
+    case TransferState::Finish : return tr("Finished");
     }
 
     return QString();

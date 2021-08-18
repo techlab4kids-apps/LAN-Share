@@ -46,6 +46,7 @@ public Q_SLOTS:
     void setMainWindowVisibility(bool visible = true);
 
 private Q_SLOTS:
+    void timerEvent();
     void onShowMainWindowTriggered();
     void onSendFilesActionTriggered();
     void onSendFolderActionTriggered();
@@ -89,6 +90,8 @@ private Q_SLOTS:
     void quitApp();
 
 private:
+    QTimer * timer;
+
     void setupActions();
     void setupToolbar();
     void setupSystrayIcon();
@@ -100,6 +103,8 @@ private:
     bool anyActiveReceiver();
 
     bool mForceQuit{false};
+
+    int elapsedSeconds;
     Ui::MainWindow *ui;
     QSystemTrayIcon* mSystrayIcon;
     QMenu* mSystrayMenu;

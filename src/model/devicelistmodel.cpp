@@ -17,6 +17,7 @@
 */
 
 #include <QPixmap>
+#include<QDebug>
 
 #include "devicelistmodel.h"
 #include "settings.h"
@@ -50,11 +51,14 @@ void DeviceListModel::onBCReceived(const Device &fromDevice)
     if (!found) {
         beginInsertRows(QModelIndex(), mDevices.size(), mDevices.size());
         mDevices.push_back(fromDevice);
+
+        std::sort(mDevices.begin(), mDevices.end());
+
         endInsertRows();
     }
 }
 
-QVector<Device> DeviceListModel::getDevices() const
+QVector<Device> DeviceListModel::getDevices()
 {
     return mDevices;
 }
