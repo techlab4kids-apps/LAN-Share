@@ -42,7 +42,7 @@ void DeviceBroadcaster::sendBroadcast()
     Device dev = Settings::instance()->getMyDevice();
     QJsonObject obj(QJsonObject::fromVariantMap({
                                                     {"id", dev.getId()},
-                                                    {"name", dev.getName()},
+                                                    {"name",  QHostInfo::localHostName()},
                                                     {"os", dev.getOSName()},
                                                     {"port", port}
                                                 }));
@@ -54,9 +54,7 @@ void DeviceBroadcaster::sendBroadcast()
     }
 }
 
-/*
- * proses broadcast yang diterima dari Device lain di jaringan
- */
+
 void DeviceBroadcaster::processBroadcast()
 {
     while (mUdpSock.hasPendingDatagrams()) {

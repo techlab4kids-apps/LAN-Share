@@ -41,7 +41,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Select receiver</string>
+        <string>Seleziona clients</string>
        </property>
       </widget>
      </item>
@@ -142,7 +142,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Note: it is possible to select multiple receivers for multicast using Ctrl+MouseClick or Ctrl+A</string>
+      <string>Note: it is possible to Seleziona più client usando Ctrl+A oppure Ctrl+MouseClick </string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -167,14 +167,14 @@
      <item>
       <widget class="QPushButton" name="pushButton_2">
        <property name="text">
-        <string>Cancel</string>
+        <string>Annulla</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
        <property name="text">
-        <string>Send</string>
+        <string>Invia</string>
        </property>
        <property name="default">
         <bool>true</bool>

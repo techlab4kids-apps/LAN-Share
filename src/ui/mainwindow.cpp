@@ -228,6 +228,7 @@ void MainWindow::selectReceiversAndSendTheFiles(QVector<QPair<QString, QString> 
 
             int secondsEstimated = receiversCount * elapsedSeconds/(processedDevices);
             ui->lblEstimetedTotalTime->setText((QDateTime::fromTime_t(secondsEstimated).toString("mm:ss")));
+            ui->lblEstimetedTotalTimeRemaining->setText((QDateTime::fromTime_t(secondsEstimated - elapsedSeconds).toString("mm:ss")));
 
         }
         timer->stop();

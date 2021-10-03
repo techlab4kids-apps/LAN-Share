@@ -43,6 +43,8 @@ See the github release page or go to [Softpedia](https://www.softpedia.com/get/I
 * Send is now serialized in order to cope relatively well with a number of clients greater than 5. Tested with 20 clients
 * Clients to select are always alphabetically ordered to allow to restart the send process from a defined client excluding previous ones 
 * Some changes to UI in order to monitor send progress
+* Broadcasted hotname instead of configured named host
+* Calculates ETA
 
 ## Usage
 * Computer has to be connected to a local area network (wired or wireless)
@@ -50,7 +52,7 @@ See the github release page or go to [Softpedia](https://www.softpedia.com/get/I
 * Send the file/folder by, select *Send* (files or folder) then -> select receiver in the *'Select Receiver'* dialog, finally click *'Send'*
 * File/folder would automatically received by the receiver
 
-## Screenshots
+## Screenshots (Not updated!)
 
 ![Screenshot 1](screenshot.png)
 
